@@ -1,77 +1,93 @@
-<template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+<template lang="pug">
+  div
+    v-row(justify="center" align="center")
+      h2 Pokédex ({{totalPokemon}})
+    v-row(justify="center" align="center")
+        v-row(justify="center" align="center")
+          v-col.col-md-3.col-sm-4.col-xs-6(v-if="pokemonList", v-for="pokemon in pokemonList", :key="pokemon.id")
+            v-card.justify-center.pokemon-card(
+              flat,
+              @click="$router.push(`/pokemon/${pokemon.name}`)",
+              :style="`background-color: hsla(${pokemonType[pokemon.types[0].type.name].hue}, 70%, 80%, 1);`")
+              v-img(
+                :src="pokemon.sprites.other['official-artwork'].front_default"
+                :aspect-ratio="1/1"
+                :width="180"
+                style="margin-left: auto; margin-right: auto;")
+              v-card-subtitle {{pokemon.pokedexNum}}
+              v-card-text
+                div.pb-1(style="text-transform: capitalize;") 
+                  h2 {{pokemon.name}}
+                v-chip.ma-1(
+                  v-for="type in pokemon.types",
+                  small, :color="pokemonType[type.type.name].color"
+                  :key="type.type.name",
+                  :class="`type-${type.type.name}`")
+                  b(style="color: white; text-shadow: 1px 1px #6a6a6a;") {{type.type.name}}
 </template>
+
+<script>
+import pokemonType from '~/static/pokemon-type.json'
+
+export default {
+  name: "IndexPage",
+  data () {
+    return {
+      loading: false,
+      totalPokemon: 0,
+      pokemonList: [],
+      pokemonType: {},
+      pageAttr: { limit: 20, offset: 0 },
+    }
+  },
+  mounted() {
+    this.pokemonType = pokemonType;
+    this.fetchPokemons();
+      window.onscroll = () => {
+        let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight + 500 > document.documentElement.offsetHeight;
+        if (bottomOfWindow) {
+          console.log('reach bottom');
+          this.fetchPokemons();
+        }
+      }
+  },
+  methods: {
+    fetchPokemons() {
+      if (!this.loading && this.pageAttr.offset <= this.totalPokemon) {
+        this.loading = true
+        this.$store.dispatch('pokemon/fetchPokemons', this.pageAttr)
+          .then(async (pokemons) => {
+            this.pageAttr.offset += this.pageAttr.limit;
+            this.totalPokemon = pokemons.count - 220; // 220 is variant or other form that doesn't related to pokedex
+            for (let i = 0; i < pokemons.results.length; i++) {
+              const pokemon = await this.$store.dispatch('pokemon/fetchPokemon', pokemons.results[i]);
+              switch(pokemon.id.toString().length) {
+                case 1:
+                  pokemon.pokedexNum = '#00' + pokemon.id; break;
+                case 2:
+                  pokemon.pokedexNum = '#0' + pokemon.id; break;
+                default:
+                  pokemon.pokedexNum = '#' + pokemon.id; break;
+              }
+              if (pokemon.id < 10000) this.pokemonList.push(pokemon); // id start from 10000 is variant or other form that doesn't related to pokedex
+            }
+            this.loading = false;
+          });
+      }
+    }
+  }
+
+}
+</script>
+
+<style lang="scss" scoped>
+  .pokemon-card {
+    cursor: pointer;
+    border-radius: 20px;
+    padding-top: 5px;
+    .v-card__subtitle {
+      padding-bottom: 0;
+      font-size: 1rem;
+    }
+  }
+</style>
