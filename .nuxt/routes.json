@@ -1,0 +1,16 @@
+[
+  {
+    "name": "inspire",
+    "path": "/inspire",
+    "component": "/Users/diofinus/workspace/project/pokedex/pages/inspire.vue",
+    "chunkName": "pages/inspire",
+    "_name": "_cd66ad54"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "/Users/diofinus/workspace/project/pokedex/pages/index.vue",
+    "chunkName": "pages/index",
+    "_name": "_98dae764"
+  }
+]
