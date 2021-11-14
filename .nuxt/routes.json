@@ -1,10 +1,10 @@
 [
   {
-    "name": "inspire",
-    "path": "/inspire",
-    "component": "/Users/diofinus/workspace/project/pokedex/pages/inspire.vue",
-    "chunkName": "pages/inspire",
-    "_name": "_cd66ad54"
+    "name": "pokemon-name",
+    "path": "/pokemon/:name?",
+    "component": "/Users/diofinus/workspace/project/pokedex/pages/pokemon/_name.vue",
+    "chunkName": "pages/pokemon/_name",
+    "_name": "_5b9fbcaa"
   },
   {
     "name": "index",
