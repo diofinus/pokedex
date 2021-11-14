@@ -4,6 +4,9 @@ const actions = {
   },
   fetchPokemon(context, param) {
     return this.$axios.$get(`https://pokeapi.co/api/v2/pokemon/${param.name}`);
+  },
+  fetchPokemonChar(context, param) {
+    return this.$axios.$get(`https://pokeapi.co/api/v2/pokemon-species/${param.id}`);
   }
 };
 export default {

@@ -3,27 +3,27 @@
     v-row(justify="center" align="center")
       h2 Pokédex ({{totalPokemon}})
     v-row(justify="center" align="center")
-        v-row(justify="center" align="center")
-          v-col.col-md-3.col-sm-4.col-xs-6(v-if="pokemonList", v-for="pokemon in pokemonList", :key="pokemon.id")
-            v-card.justify-center.pokemon-card(
-              flat,
-              @click="$router.push(`/pokemon/${pokemon.name}`)",
-              :style="`background-color: hsla(${pokemonType[pokemon.types[0].type.name].hue}, 70%, 80%, 1);`")
-              v-img(
-                :src="pokemon.sprites.other['official-artwork'].front_default"
-                :aspect-ratio="1/1"
-                :width="180"
-                style="margin-left: auto; margin-right: auto;")
-              v-card-subtitle {{pokemon.pokedexNum}}
-              v-card-text
-                div.pb-1(style="text-transform: capitalize;") 
-                  h2 {{pokemon.name}}
-                v-chip.ma-1(
-                  v-for="type in pokemon.types",
-                  small, :color="pokemonType[type.type.name].color"
-                  :key="type.type.name",
-                  :class="`type-${type.type.name}`")
-                  b(style="color: white; text-shadow: 1px 1px #6a6a6a;") {{type.type.name}}
+      v-col.col-md-3.col-sm-4.col-6(v-if="pokemonList", v-for="pokemon in pokemonList", :key="pokemon.id")
+        v-card.justify-center.pokemon-card(
+          flat, outlined
+          @click="$router.push(`/pokemon/${pokemon.name}`)",
+          :style="`background-color: hsla(${pokemonType[pokemon.types[0].type.name].hue}, 70%, 80%, 1);`")
+          v-img(
+            :src="pokemon.sprites.other['official-artwork'].front_default"
+            :aspect-ratio="1/1"
+            :width="180"
+            style="margin-left: auto; margin-right: auto;")
+          v-card-subtitle(style="background-color: white; color: darkgrey;")
+            b {{pokemon.pokedexNum}}
+          v-card-text(style="background-color: white")
+            div.pb-1(style="text-transform: capitalize;") 
+              h2 {{pokemon.name}}
+            v-chip.ma-1(
+              v-for="type in pokemon.types",
+              small, :color="pokemonType[type.type.name].color"
+              :key="type.type.name",
+              :class="`type-${type.type.name}`")
+              b(style="color: white; text-shadow: 1px 1px #6a6a6a;") {{type.type.name}}
 </template>
 
 <script>
@@ -43,13 +43,11 @@ export default {
   mounted() {
     this.pokemonType = pokemonType;
     this.fetchPokemons();
-      window.onscroll = () => {
-        let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight + 500 > document.documentElement.offsetHeight;
-        if (bottomOfWindow) {
-          console.log('reach bottom');
-          this.fetchPokemons();
-        }
-      }
+    window.addEventListener('scroll', this.infiniteScroll);
+  },
+  beforeDestroy() {
+    console.log('change!');
+    window.removeEventListener('scroll', this.infiniteScroll);
   },
   methods: {
     fetchPokemons() {
@@ -74,7 +72,11 @@ export default {
             this.loading = false;
           });
       }
-    }
+    },
+    infiniteScroll() {
+      let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight + 500 > document.documentElement.offsetHeight;
+      if (bottomOfWindow) this.fetchPokemons();
+    },
   }
 
 }
