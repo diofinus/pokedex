@@ -7,7 +7,7 @@
         v-card.justify-center.pokemon-card(
           flat, outlined
           @click="$router.push(`/pokemon/${pokemon.name}`)",
-          :style="`background-color: hsla(${pokemonType[pokemon.types[0].type.name].hue}, 70%, 80%, 1);`")
+          :style="`background-color: hsla(${pokemonType[pokemon.types[0].type.name].hue}, 70%, 80%, 1); border-width: 2px;`")
           v-img(
             :src="pokemon.sprites.other['official-artwork'].front_default"
             :aspect-ratio="1/1"

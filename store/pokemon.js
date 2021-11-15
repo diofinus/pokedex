@@ -7,7 +7,10 @@ const actions = {
   },
   fetchPokemonChar(context, param) {
     return this.$axios.$get(`https://pokeapi.co/api/v2/pokemon-species/${param.id}`);
-  }
+  },
+  fetchPokemonByUrl(context, url) {
+    return this.$axios.$get(url);
+  },
 };
 export default {
   namespaced: true,

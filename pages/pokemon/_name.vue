@@ -51,34 +51,72 @@
                   :max-width="125"
                   style="margin-left: auto; margin-right: auto;")
     v-row
-      v-tabs(right)
-        v-tab About
-        v-tab Base static
-        v-tab Evolution
+      v-tabs(right, :style="`background-color: hsla(${pokemonType[pokemon.types[0].type.name].hue}, 70%, 80%, 1);`")
+        v-tab.selection-tab.first About
+        v-tab.selection-tab Base static
+        v-tab.selection-tab Evolution
         v-tab-item
           v-card(flat)
             v-card-text
-              p {{pokemon.flavor_text_entries[0].flavor_text}}
-              p Height {{pokemon.height}}0 cm
-              p Weight {{pokemon.weight/10}} kg
-              p
-                span Abilities 
-                span(v-for="ability in pokemon.abilities") {{ability.ability.name}},&nbsp;
-              p
-                b Breeding
-              p Gender {{100-pokemon.gender_rate/8*100}}% {{pokemon.gender_rate/8*100}}%
-              p
-                span Egg Groups 
-                span(v-for="eggGroup in pokemon.egg_groups") {{eggGroup.name}},&nbsp;
-              p Egg Cycles {{pokemon.hatch_counter}} ({{255*pokemon.hatch_counter}}-{{257*pokemon.hatch_counter}} steps)
+              p(style="color: darkslategrey;")
+                b Description
+              p(style="color: darkslategrey; font-size: 16px;") {{pokemon.flavor_text_entries[0].flavor_text}}
+              v-divider
+              br
+              v-row(justify="start", no-gutters)
+                v-col(md="auto")
+                  p Height
+                  p Weight
+                  p Abilities
+                  p(style="color: darkslategrey;")
+                    b Breeding
+                  p Gender
+                  p Egg Groups
+                  p Egg Cycles
+                v-col.offset-md-1(md="auto", style="color: darkslategrey;")
+                  p {{pokemon.height}}0 cm
+                  p {{pokemon.weight/10}} kg
+                  p 
+                    span(v-for="(ability, idx) in pokemon.abilities", :key="idx")
+                      span {{ability.ability.name}}
+                      span(v-if="idx+1 < pokemon.abilities.length") ,&nbsp;
+                  p &nbsp;
+                  p 
+                    v-icon(color="blue") mdi-gender-male
+                    span.mr-2 {{100-pokemon.gender_rate/8*100}}%
+                    v-icon(color="pink") mdi-gender-female
+                    span {{pokemon.gender_rate/8*100}}%
+                  p 
+                    span(v-for="eggGroup in pokemon.egg_groups")
+                      span {{eggGroup.name}}
+                      span(v-if="idx+1 < pokemon.abilities.length") ,&nbsp;
+                  p {{pokemon.hatch_counter}} ({{255*pokemon.hatch_counter}}-{{257*pokemon.hatch_counter}} steps)
         v-tab-item
           v-card(flat)
             v-card-text
-              p qwe
+              v-row(v-for="stat in stats")
+                v-col.offset-md-2.col-md-8.offset-sm-2.col-sm-8
+                  div(style="width: 100%;")
+                    span {{stat.name}}
+                    span(style="float: right;") {{pokemon[stat.attr]}}
+                  v-progress-linear(v-model="pokemon[`${stat.attr}_perc`]", rounded, height="7")
         v-tab-item
           v-card(flat)
             v-card-text
-              p zxc
+              v-row(v-for="evolution in evolutionTree")
+                v-col.offset-md-2.col-md-8.offset-sm-2.col-sm-8.col-xs-6
+                  v-row(v-for="method in evolution.methods")
+                    div(v-if="method.trigger.name === 'level-up'")
+                      span Triggered by {{method.trigger.name}}&nbsp;
+                      span at&nbsp;
+                      span(v-for="requirement in evolutionReq")
+                        span(v-if="method[requirement.attr]") {{requirement.name}} {{method[requirement.attr]}}&nbsp;
+                    div(v-else) Coming Soon!
+                  v-row
+                    v-col.col-6
+                      p {{evolution.from.name}}
+                    v-col.col-6
+                      p {{evolution.to.name}}
 </template>
 
 <script>
@@ -91,6 +129,21 @@ export default {
       loading: true,
       pokemon: {},
       pokemonType: {},
+      stats: [
+        { attr: 'hp', name: 'HP' },
+        { attr: 'attack', name: 'Attack' },
+        { attr: 'defense', name: 'Defense' },
+        { attr: 'special-attack', name: 'Sp. Attack' },
+        { attr: 'special-defense', name: 'Sp. Defense' },
+        { attr: 'speed', name: 'Speed' },
+      ],
+      evolutionTree: [],
+      evolutionReq: [
+        { attr: 'min_affection', name: 'affection' },
+        { attr: 'min_beauty', name: 'beauty' },
+        { attr: 'min_happiness', name: 'happiness' },
+        { attr: 'min_level', name: 'level' },
+      ],
     }
   },
   mounted() {
@@ -110,13 +163,47 @@ export default {
             default:
               pokemon.pokedexNum = '#' + pokemon.id; break;
           }
+          pokemon.stats.forEach(stat => {
+            pokemon[stat.stat.name] = stat.base_stat;
+            pokemon[`${stat.stat.name}_perc`] = stat.base_stat/255*100;
+          });
           this.$store.dispatch('pokemon/fetchPokemonChar', { id: pokemon.id })
             .then(char => {
               this.pokemon = {...pokemon, ...char};
               this.loading = false;
+              this.fetchPokemonEvolution(this.pokemon.evolution_chain.url)
             });
         });
+    },
+    fetchPokemonEvolution(url) {
+      this.$store.dispatch('pokemon/fetchPokemonByUrl', url)
+        .then(evolution => {
+          this.getEvolution(evolution.chain);
+        });
+    },
+    getEvolution(evolution) {
+      evolution.evolves_to.forEach(ev_to => {
+        this.evolutionTree.push({
+          from: { name: evolution.species.name },
+          to: { name: ev_to.species.name },
+          methods: ev_to.evolution_details,
+        });
+        console.log(this.evolutionTree);
+        if(ev_to.evolves_to) this.getEvolution(ev_to);
+      });
     }
   }
 }
 </script>
+
+<style lang="scss">
+  .theme--light.v-tabs > .v-tabs-bar {
+    background-color: inherit !important;  
+  }
+  .selection-tab {
+    background-color: white;
+    &.first {
+      border-radius: 20px 0 0 0;
+    }
+  }
+</style>
