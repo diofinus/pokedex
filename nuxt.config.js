@@ -18,7 +18,7 @@ export default {
   },
   target: 'static',
   router: {
-    base: '/<repository-name>/'
+    base: '/pokedex/'
   },
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
