@@ -1,0 +1,74 @@
+{
+  "normal": {
+    "color": "#aa9",
+    "hue": 48
+  },
+  "fire": {
+    "color": "#f42",
+    "hue": 26
+  },
+  "water": {
+    "color": "#39f",
+    "hue": 221
+  },
+  "electric": {
+    "color": "#fc3",
+    "hue": 60
+  },
+  "grass": {
+    "color": "#7c5",
+    "hue": 98
+  },
+  "ice": {
+    "color": "#6cf",
+    "hue": 177
+  },
+  "fighting": {
+    "color": "#b54",
+    "hue": 2
+  },
+  "poison": {
+    "color": "#a59",
+    "hue": 301
+  },
+  "ground": {
+    "color": "#db5",
+    "hue": 34
+  },
+  "flying": {
+    "color": "#89f",
+    "hue": 256
+  },
+  "psychic": {
+    "color": "#f59",
+    "hue": 342
+  },
+  "bug": {
+    "color": "#ab2",
+    "hue": 67
+  },
+  "rock": {
+    "color": "#ba6",
+    "hue": 50
+  },
+  "ghost": {
+    "color": "#66b",
+    "hue": 266
+  },
+  "dragon": {
+    "color": "#76e",
+    "hue": 257
+  },
+  "dark": {
+    "color": "#754",
+    "hue": 24
+  },
+  "steel": {
+    "color": "#aab",
+    "hue": 240
+  },
+  "fairy": {
+    "color": "#e9e",
+    "hue": 330
+   }
+}
