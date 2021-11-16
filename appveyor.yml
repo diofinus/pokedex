@@ -1,6 +1,6 @@
 environment:
   # Nuxt requires node v12 minimum
-  nodejs_version: '12'
+  nodejs_version: '14'
   # Encrypt sensitive data (https://ci.appveyor.com/tools/encrypt)
   github_access_token:
     secure: qBBIU2aRKmoVLqlIVg5VFgMSR25iS6QS/RochW6z7nVXI2wQis0c6djUPZszXs4U
