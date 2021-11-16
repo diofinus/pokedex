@@ -19,7 +19,6 @@
     "@nuxtjs/vuetify": "^1.12.1",
     "core-js": "^3.15.1",
     "nuxt": "^2.15.7",
-    "push-dir": "^0.4.1",
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
@@ -39,6 +38,7 @@
     "pug-plain-loader": "^1.1.0",
     "sass": "^1.43.4",
     "sass-loader": "10",
-    "vue-jest": "^3.0.4"
+    "vue-jest": "^3.0.4",
+    "push-dir": "^0.4.1"
   }
 }
